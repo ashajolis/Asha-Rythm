@@ -2,20 +2,19 @@
   "name": "Asha · My Life Rhythm",
   "short_name": "Asha Rhythm",
   "description": "My personal life rhythm guide — always with me",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0c0a07",
   "theme_color": "#0c0a07",
   "icons": [
     {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "./icons/icon-192.png",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
