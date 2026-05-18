@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Asha · My Life Rhythm</title>
+<meta name="theme-color" content="#0c0a07">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Asha Rhythm">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="My personal life rhythm guide — always with me">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0a07;--s1:#13100c;--s2:#1c1710;--s3:#241d14;--card:#1f1a12;--card2:#27211a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f2e8d9;--muted:#8a7a68;--muted2:#a89880;
+  --accent:#c9a96e;--accent2:#e8c89a;
+  --terra:#c4714a;--terra-s:rgba(196,113,74,0.12);
+  --sage:#7a9b76;--sage-s:rgba(122,155,118,0.12);
+  --gold:#d4922a;--gold-s:rgba(212,146,42,0.12);
+  --rose:#c2185b;--rose-s:rgba(194,24,91,0.1);
+  --plum:#8e6bbf;--plum-s:rgba(142,107,191,0.1);
+  --sky:#4a8fab;--sky-s:rgba(74,143,171,0.12);
+  --brown:#6b4c3b;--r:14px;--r-sm:8px;
+  --edit-glow:rgba(201,169,110,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.65;min-height:100vh;}
+
+/* ── EDIT MODE BANNER ── */
+#edit-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:rgba(201,169,110,0.95);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;gap:10px;
+  transform:translateY(100%);transition:transform 0.3s ease;
+}
+#edit-bar.visible{transform:translateY(0);}
+#edit-bar .eb-label{font-size:0.72rem;font-weight:600;color:#1a1200;letter-spacing:0.5px;}
+#edit-bar .eb-hint{font-size:0.65rem;color:rgba(26,18,0,0.7);}
+#edit-bar .eb-done{
+  background:#1a1200;color:var(--accent);border:none;
+  font-family:'Jost',sans-serif;font-size:0.75rem;font-weight:600;
+  padding:6px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;
+}
+
+/* ── EDIT MODE STYLES ── */
+body.editing [contenteditable]{
+  outline:none;border-bottom:1px dashed rgba(201,169,110,0.4);
+  cursor:text;position:relative;
+}
+body.editing [contenteditable]:focus{
+  background:var(--edit-glow);border-radius:4px;
+  border-bottom-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(201,169,110,0.1);
+}
+body.editing .edit-add-btn{display:flex !important;}
+body.editing .edit-del-btn{display:flex !important;}
+body.editing [data-editable-section]{
+  border:1px dashed rgba(201,169,110,0.15);
+  border-radius:8px;padding:4px;margin:-4px;
+}
+
+/* Add/Delete buttons */
+.edit-add-btn,.edit-del-btn{
+  display:none;align-items:center;gap:5px;
+  font-size:0.65rem;font-weight:600;letter-spacing:0.5px;
+  border:none;cursor:pointer;font-family:'Jost',sans-serif;
+  border-radius:20px;padding:4px 10px;margin-top:6px;
+}
+.edit-add-btn{background:rgba(122,155,118,0.2);color:var(--sage);}
+.edit-add-btn:hover{background:rgba(122,155,118,0.35);}
+.edit-del-btn{background:rgba(196,113,74,0.15);color:var(--terra);margin-left:6px;}
+.edit-del-btn:hover{background:rgba(196,113,74,0.3);}
+.edit-row-controls{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+
+/* ── EDIT TOGGLE BTN in nav ── */
+#edit-toggle{
+  flex-shrink:0;padding:8px 12px;
+  border:1px solid rgba(201,169,110,0.3);background:transparent;
+  color:var(--muted);font-family:'Jost',sans-serif;font-size:0.65rem;font-weight:600;
+  cursor:pointer;border-radius:20px;letter-spacing:0.5px;margin-left:auto;
+  transition:all 0.2s;white-space:nowrap;
+}
+#edit-toggle.active{background:rgba(201,169,110,0.15);color:var(--accent);border-color:var(--accent);}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:200;background:rgba(12,10,7,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-inner{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;padding:0 16px;max-width:800px;margin:0 auto;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nb{flex-shrink:0;padding:14px 12px;border:none;background:transparent;color:var(--muted);font-family:'Jost',sans-serif;font-size:0.73rem;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.18s;white-space:nowrap;letter-spacing:0.3px;}
+.nb:hover{color:var(--text);}
+.nb.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── PAGES ── */
+.page{display:none;max-width:800px;margin:0 auto;padding:0 16px 100px;}
+.page.visible{display:block;animation:up 0.3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ── */
+.hero{padding:52px 0 36px;position:relative;}
+.hero::before{content:'';position:absolute;top:0;left:-16px;right:-16px;bottom:0;background:radial-gradient(ellipse 70% 60% at 15% 40%,rgba(196,113,74,0.13),transparent),radial-gradient(ellipse 50% 50% at 85% 60%,rgba(212,146,42,0.09),transparent);pointer-events:none;}
+.hero-tag{font-size:0.6rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:block;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,8vw,4.2rem);font-weight:300;line-height:1.05;margin-bottom:16px;}
+.hero h1 em{font-style:italic;color:var(--accent);}
+.hero-sub{font-size:0.86rem;color:var(--muted2);max-width:520px;line-height:1.75;}
+
+/* ── SECTION LABEL ── */
+.slbl{font-size:0.6rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:32px 0 14px;display:flex;align-items:center;gap:10px;}
+.slbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:10px;position:relative;}
+.card-bar{position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 2px 2px 0;}
+
+/* ── BLOCK TIMELINE ── */
+.blocks{display:flex;flex-direction:column;gap:0;}
+.block-row{display:flex;gap:14px;align-items:flex-start;}
+.block-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px;padding-top:4px;}
+.block-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.block-line{width:1.5px;flex:1;min-height:18px;background:var(--border);margin:3px 0;}
+.block-content{padding-bottom:22px;flex:1;min-width:0;}
+.block-time{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.8px;margin-bottom:3px;}
+.block-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;margin-bottom:4px;line-height:1.2;}
+.block-desc{font-size:0.79rem;color:var(--muted2);line-height:1.6;}
+.block-tasks{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+.bt{display:flex;align-items:flex-start;gap:7px;font-size:0.77rem;color:var(--muted2);line-height:1.5;}
+.bt::before{content:'·';color:var(--accent);flex-shrink:0;margin-top:1px;}
+.block-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.tag{font-size:0.6rem;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
+
+/* ── DAY TYPE CARDS ── */
+.day-grid{display:flex;flex-direction:column;gap:8px;}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.day-card-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;}
+.day-card-header:hover{background:rgba(255,255,255,0.02);}
+.day-icon{font-size:1.4rem;flex-shrink:0;}
+.day-label{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;}
+.day-sub{font-size:0.75rem;color:var(--muted2);margin-top:1px;}
+.day-chev{margin-left:auto;font-size:0.7rem;color:var(--muted);transition:transform 0.2s;flex-shrink:0;}
+.day-chev.open{transform:rotate(90deg);}
+.day-body{display:none;border-top:1px solid var(--border);padding:16px 18px;}
+.day-body.open{display:block;}
+.day-section-lbl{font-size:0.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:12px 0 7px;}
+.day-section-lbl:first-child{margin-top:0;}
+.day-item{font-size:0.8rem;color:var(--muted2);line-height:1.65;margin-bottom:4px;display:flex;gap:8px;align-items:flex-start;}
+.day-item::before{content:'→';color:var(--accent);flex-shrink:0;font-size:0.7rem;margin-top:2px;}
+
+/* ── PHASE TABLE ── */
+.phase-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.phase-table{width:100%;border-collapse:collapse;}
+.phase-table th{font-size:0.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;background:var(--s2);}
+.phase-table td{font-size:0.78rem;color:var(--muted2);padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;}
+.phase-table tr:last-child td{border-bottom:none;}
+.phase-table td:first-child{color:var(--text);font-weight:500;white-space:nowrap;}
+
+/* ── UGC ROADMAP ── */
+.roadmap{display:flex;flex-direction:column;gap:8px;}
+.rm-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.rm-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rm-num{font-family:'DM Mono',monospace;font-size:0.65rem;font-weight:500;color:var(--accent);background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);border-radius:6px;padding:2px 8px;flex-shrink:0;}
+.rm-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;}
+.rm-income{margin-left:auto;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--sage);flex-shrink:0;}
+.rm-items{display:flex;flex-direction:column;gap:4px;}
+.rm-item{font-size:0.79rem;color:var(--muted2);display:flex;gap:8px;align-items:flex-start;line-height:1.55;}
+.rm-item::before{content:'·';color:var(--terra);flex-shrink:0;}
+
+/* ── RULES ── */
+.rule{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:8px;}
+.rule-n{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--accent);letter-spacing:1px;margin-bottom:5px;}
+.rule-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;margin-bottom:7px;}
+.rule-body{font-size:0.81rem;color:var(--muted2);line-height:1.7;}
+.rule-body strong{color:var(--text);font-weight:500;}
+
+/* ── CALLOUT ── */
+.callout{border-radius:12px;padding:14px 18px;font-size:0.81rem;line-height:1.7;margin:10px 0;border-left:2px solid;}
+.callout strong{display:block;font-size:0.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.c-gold{background:rgba(201,169,110,0.07);border-color:var(--accent);color:var(--accent2);}
+.c-gold strong{color:var(--accent);}
+.c-terra{background:var(--terra-s);border-color:var(--terra);color:#d4956e;}
+.c-terra strong{color:var(--terra);}
+.c-sage{background:var(--sage-s);border-color:var(--sage);color:#9ab896;}
+.c-sage strong{color:var(--sage);}
+.c-rose{background:var(--rose-s);border-color:var(--rose);color:#e87aab;}
+.c-rose strong{color:var(--rose);}
+
+/* ── MANTRA ── */
+.mantra{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.3rem;font-weight:300;line-height:1.8;text-align:center;color:var(--muted2);padding:32px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:24px 0;}
+.mantra span{color:var(--text);}
+
+/* ── WEEKLY GRID ── */
+.week-grid{display:flex;flex-direction:column;gap:6px;}
+.wday{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;gap:14px;align-items:flex-start;}
+.wday-name{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:500;color:var(--accent);letter-spacing:1px;text-transform:uppercase;min-width:32px;padding-top:3px;}
+.wday-body{flex:1;}
+.wday-title{font-size:0.88rem;font-weight:500;margin-bottom:3px;}
+.wday-detail{font-size:0.77rem;color:var(--muted2);line-height:1.65;}
+.chip{display:inline-block;font-size:0.58rem;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;padding:1px 7px;border-radius:8px;margin-right:3px;vertical-align:middle;}
+.chip-t{background:var(--terra-s);color:var(--terra);}
+.chip-s{background:var(--sage-s);color:var(--sage);}
+.chip-g{background:var(--gold-s);color:var(--gold);}
+.chip-p{background:var(--plum-s);color:var(--plum);}
+.chip-sky{background:var(--sky-s);color:var(--sky);}
+
+/* ── VISION SECTION ── */
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+@media(max-width:500px){.vision-grid{grid-template-columns:1fr;}}
+.vision-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.vision-icon{font-size:1.5rem;margin-bottom:8px;display:block;}
+.vision-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;margin-bottom:6px;}
+.vision-body{font-size:0.78rem;color:var(--muted2);line-height:1.65;}
+
+/* ── CHECKLIST ── */
+.checklist{display:flex;flex-direction:column;gap:6px;}
+.ci{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;}
+.ci-icon{font-size:0.95rem;flex-shrink:0;margin-top:2px;}
+.ci-text{font-size:0.8rem;color:var(--muted2);line-height:1.6;}
+.ci-text strong{color:var(--text);font-weight:500;display:block;margin-bottom:1px;}
+
+/* ── AFFIRMATION ── */
+.aff-card{background:linear-gradient(135deg,var(--brown),#4a3728);border-radius:var(--r);padding:24px 22px;text-align:center;margin-bottom:10px;position:relative;overflow:hidden;}
+.aff-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(196,113,74,0.15);}
+.aff-card::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;border-radius:50%;background:rgba(212,146,42,0.1);}
+.aff-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;font-weight:300;line-height:1.7;color:var(--accent2);position:relative;z-index:1;}
+.aff-sub{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:10px;position:relative;z-index:1;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── NOTES SECTION ── */
+.notes-area{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;min-height:120px;font-family:'Jost',sans-serif;font-size:0.82rem;color:var(--muted2);line-height:1.7;width:100%;resize:vertical;outline:none;}
+.notes-area:focus{border-color:rgba(201,169,110,0.3);box-shadow:0 0 0 2px rgba(201,169,110,0.07);}
+.notes-area::placeholder{color:rgba(138,122,104,0.5);}
+
+/* ── SAVE TOAST ── */
+#save-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-10px);background:rgba(122,155,118,0.95);color:#fff;font-size:0.72rem;font-weight:600;padding:6px 16px;border-radius:20px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:1000;}
+#save-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="save-toast">✓ Saved</div>
+
+<!-- ── NAV ── -->
+<div class="nav">
+  <div class="nav-inner">
+    <button class="nb active" onclick="show('vision')">✦ Vision</button>
+    <button class="nb" onclick="show('daily')">☀️ Daily</button>
+    <button class="nb" onclick="show('daytypes')">📅 Days</button>
+    <button class="nb" onclick="show('weekly')">🗓 Weekly</button>
+    <button class="nb" onclick="show('cycle')">🌙 Cycle</button>
+    <button class="nb" onclick="show('ugc')">🎬 UGC</button>
+    <button class="nb" onclick="show('rules')">⚡ Rules</button>
+    <button class="nb" onclick="show('reset')">🔄 Lost</button>
+    <button class="nb" onclick="show('notes')">📝 Notes</button>
+    <button id="edit-toggle" onclick="toggleEdit()">✏️ Edit</button>
+  </div>
+</div>
+
+<!-- ── EDIT BAR ── -->
+<div id="edit-bar">
+  <div>
+    <div class="eb-label">✏️ Edit Mode On</div>
+    <div class="eb-hint">Tap any text to change it · Changes save automatically</div>
+  </div>
+  <button class="eb-done" onclick="toggleEdit()">Done Editing</button>
+</div>
+
+<!-- ══════════ VISION ══════════ -->
+<div class="page visible" id="page-vision">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="vision-tag">Asha Jolie · Your Life, Your Terms</span>
+    <h1>I am building<br>the life I <em contenteditable="false" data-key="vision-h1-em">dreamed of</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="vision-sub">This is your guide. Come back to it on hard days, lost days, overwhelmed days, and good days. It knows who you are and what you're building.</p>
+  </div>
+
+  <div class="aff-card">
+    <div class="aff-text" contenteditable="false" data-key="vision-aff">"I am a present mother, a creative force, a business woman, and a woman fully alive. I do not choose between these things — I am all of them, every day."</div>
+    <div class="aff-sub" contenteditable="false" data-key="vision-aff-sub">Read this every morning · Believe it every night</div>
+  </div>
+
+  <div class="slbl">What You Are Building</div>
+  <div class="vision-grid" id="vision-grid">
+    <div class="vision-card" data-editable-section>
+      <span class="vision-icon" contenteditable="false" data-key="vc1-icon">📚</span>
+      <div class="vision-title" contenteditable="false" data-key="vc1-title">A World-Class Home</div>
+      <div class="vision-body" contenteditable="false" data-key="vc1-body">Your girls get a Cambridge-aligned education, a mother who is present, and a home that feels warm and safe — all because of you.</div>
+      <div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'vision-card')">✕ Remove card</button></div>
+    </div>
+    <div class="vision-card" data-editable-section>
+      <span class="vision-icon" contenteditable="false" data-key="vc2-icon">🎬</span>
+      <div class="vision-title" contenteditable="false" data-key="vc2-title">A UGC Business</div>
+      <div class="vision-body" contenteditable="false" data-key="vc2-body">AshaJolies UGC HQ is a real business. You are building it from your home, from your life, in your 2pm block — and it will grow.</div>
+      <div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'vision-card')">✕ Remove card</button></div>
+    </div>
+    <div class="vision-card" data-editable-section>
+      <span class="vision-icon" contenteditable="false" data-key="vc3-icon">🏡</span>
+      <div class="vision-title" contenteditable="false" data-key="vc3-title">A Beautiful Home Life</div>
+      <div class="vision-body" contenteditable="false" data-key="vc3-body">Meals cooked with love. Clean spaces. Girls who feel seen. A partner who has a team. This is the life, not the background to the life.</div>
+      <div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'vision-card')">✕ Remove card</button></div>
+    </div>
+    <div class="vision-card" data-editable-section>
+      <span class="vision-icon" contenteditable="false" data-key="vc4-icon">🌙</span>
+      <div class="vision-title" contenteditable="false" data-key="vc4-title">A Woman Who Lives</div>
+      <div class="vision-body" contenteditable="false" data-key="vc4-body">Rest without guilt. Adventures. Skin care and dressing up. Cooking things you love. Reading. You are not just managing life — you are living it.</div>
+      <div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'vision-card')">✕ Remove card</button></div>
+    </div>
+  </div>
+  <button class="edit-add-btn" onclick="addVisionCard()">+ Add vision card</button>
+
+  <div class="slbl">Your Non-Negotiables</div>
+  <div class="checklist" id="checklist-nonneg">
+    <div class="ci" data-editable-section><div class="ci-icon" contenteditable="false" data-key="nn1-icon">🌅</div><div class="ci-text"><strong contenteditable="false" data-key="nn1-title">Wizard Hour at 5am — protected always</strong><span contenteditable="false" data-key="nn1-body">This is your time before the world wakes up. Content, journaling, goals, dreaming. It is the foundation of everything.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon" contenteditable="false" data-key="nn2-icon">👧</div><div class="ci-text"><strong contenteditable="false" data-key="nn2-title">Full presence during homeschool</strong><span contenteditable="false" data-key="nn2-body">Phone away. You're teaching. They will remember your attention more than any lesson plan.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon" contenteditable="false" data-key="nn3-icon">😴</div><div class="ci-text"><strong contenteditable="false" data-key="nn3-title">Rest hour at 1pm — every day</strong><span contenteditable="false" data-key="nn3-body">Not optional. Not guilty. This is when your body and mind reset. Your afternoon depends on it.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon" contenteditable="false" data-key="nn4-icon">🎬</div><div class="ci-text"><strong contenteditable="false" data-key="nn4-title">2pm Content Creation — UGC business hours</strong><span contenteditable="false" data-key="nn4-body">This block is sacred. It is how the business gets built. Show up for it even on hard days — even for 30 minutes.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon" contenteditable="false" data-key="nn5-icon">🌙</div><div class="ci-text"><strong contenteditable="false" data-key="nn5-title">Kitchen closed at 8:30pm — phone down by 9pm</strong><span contenteditable="false" data-key="nn5-body">Your morning depends on your night. A clean kitchen and an early rest are how you show up fresh at 5am.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+  </div>
+  <button class="edit-add-btn" onclick="addChecklist('checklist-nonneg')">+ Add non-negotiable</button>
+
+  <div class="mantra"><span contenteditable="false" data-key="vision-mantra">"You don't need to do everything perfectly. You need to show up consistently. Consistent beats perfect every single time."</span></div>
+
+  <div class="slbl">The Three Promises You Make to Yourself</div>
+  <div id="promises-list">
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="p1-n">PROMISE 01</div><div class="rule-title" contenteditable="false" data-key="p1-title">I will not plan my life from a place of guilt.</div><div class="rule-body" contenteditable="false" data-key="p1-body">No more planning because you feel behind. No more overnight overhauls because one day went wrong. You plan from abundance — from what you have, what's working, and what you want more of.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="p2-n">PROMISE 02</div><div class="rule-title" contenteditable="false" data-key="p2-title">I will use my apps as tools, not as masters.</div><div class="rule-body" contenteditable="false" data-key="p2-body">Roots, Luminary, UGC HQ, Cycle Guide — they serve you. You do not serve them. If a day goes differently than planned, you close the apps and live the day. You update them tomorrow.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="p3-n">PROMISE 03</div><div class="rule-title" contenteditable="false" data-key="p3-title">I will let my cycle lead, not override me.</div><div class="rule-body" contenteditable="false" data-key="p3-body">Some weeks you will film everything and pitch everyone. Some weeks you will do sofa school and batch cook stew. Both are correct. Both are the life.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+  </div>
+  <button class="edit-add-btn" onclick="addPromise()">+ Add promise</button>
+</div>
+
+<!-- ══════════ DAILY RHYTHM ══════════ -->
+<div class="page" id="page-daily">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="daily-tag">Your Anchor · Every Single Day</span>
+    <h1>The Daily <em contenteditable="false" data-key="daily-h1">Rhythm</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="daily-sub">This is what a full, good day looks like. Anchor blocks don't move. Flexible blocks shift with your cycle and energy. The shape stays the same — the intensity changes.</p>
+  </div>
+  <div class="callout c-gold">
+    <strong>🔑 How to Read This</strong>
+    <span contenteditable="false" data-key="daily-callout" style="color:var(--muted2);font-size:0.81rem;">Orange dot = Anchor block — locked, doesn't move. Green dot = Flexible block — shifts with energy, cycle phase, and day type. On light days, flexible blocks shrink. On full days, they expand. Anchors always stay.</span>
+  </div>
+
+  <div class="slbl">Morning — The Foundation</div>
+  <div class="blocks" id="blocks-morning">
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b1-time">5:00 – 6:30 AM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b1-name">⚡ Wizard Hour</div>
+        <div class="block-desc" contenteditable="false" data-key="b1-desc">Before the girls wake. Before the world starts. This hour belongs only to you and your dreams.</div>
+        <div class="block-tasks" id="bt-b1">
+          <div class="bt" contenteditable="false" data-key="b1-t1">Journal — brain dump, gratitude, or cycle check-in (5 min)</div>
+          <div class="bt" contenteditable="false" data-key="b1-t2">Content work — scripting, filming ideas, pitch writing, or editing clips</div>
+          <div class="bt" contenteditable="false" data-key="b1-t3">Read — one chapter, one article, something that feeds your mind</div>
+          <div class="bt" contenteditable="false" data-key="b1-t4">Skin care, tea, silence — ease in before the rush</div>
+          <div class="bt" contenteditable="false" data-key="b1-t5">Check Roots — set today's 3 priorities and day type</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b1')">+ Add task</button>
+        <div class="block-tags"><span class="tag" style="background:var(--terra-s);color:var(--terra)">Content</span><span class="tag" style="background:var(--gold-s);color:var(--gold)">Creative</span><span class="tag" style="background:var(--plum-s);color:var(--plum)">Personal</span></div>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b2-time">~6:30 AM · FLEXIBLE</div>
+        <div class="block-name" contenteditable="false" data-key="b2-name">🍳 Morning Kitchen</div>
+        <div class="block-desc" contenteditable="false" data-key="b2-desc">Breakfast for the family. Calm, nourishing, not rushed.</div>
+        <div class="block-tasks" id="bt-b2">
+          <div class="bt" contenteditable="false" data-key="b2-t1">Make breakfast — eggs, porridge, fruit, whatever's in the house</div>
+          <div class="bt" contenteditable="false" data-key="b2-t2">Pack school bags / set out homeschool materials for the day</div>
+          <div class="bt" contenteditable="false" data-key="b2-t3">Girls' morning — wake, wash, dress, eat together</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b2')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b3-time">~8:30 AM · FLEXIBLE</div>
+        <div class="block-name" contenteditable="false" data-key="b3-name">✨ Self Care</div>
+        <div class="block-desc" contenteditable="false" data-key="b3-desc">Shower, dress, hair — feel beautiful before school starts.</div>
+        <div class="block-tasks" id="bt-b3">
+          <div class="bt" contenteditable="false" data-key="b3-t1">Shower and skin care routine — take care of yourself first</div>
+          <div class="bt" contenteditable="false" data-key="b3-t2">Dress intentionally — even on home days, get dressed properly</div>
+          <div class="bt" contenteditable="false" data-key="b3-t3">Check your cycle guide — what phase are you in today?</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b3')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b4-time">~9:00 AM – 12:00 PM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b4-name">📚 Homeschool</div>
+        <div class="block-desc" contenteditable="false" data-key="b4-desc">Open Luminary. Set the day mode. Teach, guide, be present. Close the app when done.</div>
+        <div class="block-tasks" id="bt-b4">
+          <div class="bt" contenteditable="false" data-key="b4-t1">9:00 – 9:45am — Core lessons: Maths + English (both girls)</div>
+          <div class="bt" contenteditable="false" data-key="b4-t2">10:00 – 11:00am — Second subject: Science, History, or Geography</div>
+          <div class="bt" contenteditable="false" data-key="b4-t3">11:00 – 12:00pm — Skills block: Art, PE, Life Skills, Financial Literacy</div>
+          <div class="bt" contenteditable="false" data-key="b4-t4">Phone away for the whole block — Luminary on tablet, not phone</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b4')">+ Add task</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Midday — Reset & Recharge</div>
+  <div class="blocks" id="blocks-midday">
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b5-time">~12:00 PM · FLEXIBLE</div>
+        <div class="block-name" contenteditable="false" data-key="b5-name">🍽️ Lunch + Family Time</div>
+        <div class="block-desc" contenteditable="false" data-key="b5-desc">Eat together. Slow down. Talk. No phones at the table.</div>
+        <div class="block-tasks" id="bt-b5">
+          <div class="bt" contenteditable="false" data-key="b5-t1">Leftovers, batch cook lunch, or a quick hot meal</div>
+          <div class="bt" contenteditable="false" data-key="b5-t2">Sit together — ask the girls what they learned today</div>
+          <div class="bt" contenteditable="false" data-key="b5-t3">Table cleared and wiped before rest hour</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b5')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b6-time">~1:00 PM · REST HOUR — PROTECTED</div>
+        <div class="block-name" contenteditable="false" data-key="b6-name">😴 Rest Hour</div>
+        <div class="block-desc" contenteditable="false" data-key="b6-desc">Sacred. 60 minutes of nothing. No apps, no UGC HQ, no planning.</div>
+        <div class="block-tasks" id="bt-b6">
+          <div class="bt" contenteditable="false" data-key="b6-t1">Lie down — even if you don't sleep, horizontal rest counts</div>
+          <div class="bt" contenteditable="false" data-key="b6-t2">Girls have their own quiet time during this hour</div>
+          <div class="bt" contenteditable="false" data-key="b6-t3">Phone on silent — no scrolling, no checking</div>
+          <div class="bt" contenteditable="false" data-key="b6-t4">In late luteal or menstrual: extend to 90 minutes</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b6')">+ Add task</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Afternoon — Your Business Hours</div>
+  <div class="blocks" id="blocks-afternoon">
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b7-time">~2:00 PM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b7-name">🎬 Content Creation</div>
+        <div class="block-desc" contenteditable="false" data-key="b7-desc">UGC HQ opens. This is AshaJolies business hours. Film, edit, pitch, plan, deliver.</div>
+        <div class="block-tasks" id="bt-b7">
+          <div class="bt" contenteditable="false" data-key="b7-t1">Open UGC HQ — check what's active and what's due</div>
+          <div class="bt" contenteditable="false" data-key="b7-t2">Batch film 2–3 clips back to back when energy is high</div>
+          <div class="bt" contenteditable="false" data-key="b7-t3">Edit, submit, invoice during mid-luteal</div>
+          <div class="bt" contenteditable="false" data-key="b7-t4">Pitch 2–3 brands per week during ovulatory phase only</div>
+          <div class="bt" contenteditable="false" data-key="b7-t5">Close UGC HQ when the block ends</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b7')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b8-time">~3:30 PM · FLEXIBLE</div>
+        <div class="block-name" contenteditable="false" data-key="b8-name">🧹 Chores Block</div>
+        <div class="block-desc" contenteditable="false" data-key="b8-desc">Rotating daily chores. Film while you do them — this is free UGC content.</div>
+        <div class="block-tasks" id="bt-b8">
+          <div class="bt" contenteditable="false" data-key="b8-t1">Mon: sweep + mop floors, wipe surfaces</div>
+          <div class="bt" contenteditable="false" data-key="b8-t2">Tue: bathrooms deep clean</div>
+          <div class="bt" contenteditable="false" data-key="b8-t3">Wed: laundry wash + fold</div>
+          <div class="bt" contenteditable="false" data-key="b8-t4">Thu: bedrooms tidy + dust</div>
+          <div class="bt" contenteditable="false" data-key="b8-t5">Fri: pantry + fridge reset, groceries planned</div>
+          <div class="bt" contenteditable="false" data-key="b8-t6">Daily: dishes done, kitchen wiped, surfaces clear</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b8')">+ Add task</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slbl">Evening — Nourish & Connect</div>
+  <div class="blocks" id="blocks-evening">
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b9-time">~5:00 PM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b9-name">🍲 Cooking & Baking</div>
+        <div class="block-desc" contenteditable="false" data-key="b9-desc">Dinner made with love. The girls help. Music on.</div>
+        <div class="block-tasks" id="bt-b9">
+          <div class="bt" contenteditable="false" data-key="b9-t1">Cook from the batch plan — no last-minute stress</div>
+          <div class="bt" contenteditable="false" data-key="b9-t2">Girls help where they can — life skills in real time</div>
+          <div class="bt" contenteditable="false" data-key="b9-t3">Film the process if it's a good cooking day</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b9')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b10-time">~6:30 PM · FLEXIBLE</div>
+        <div class="block-name" contenteditable="false" data-key="b10-name">👨‍👩‍👧 Family Evening</div>
+        <div class="block-desc" contenteditable="false" data-key="b10-desc">All apps closed. Play, movies, outdoor walks, stories, laughter.</div>
+        <div class="block-tasks" id="bt-b10">
+          <div class="bt" contenteditable="false" data-key="b10-t1">Dinner together at the table — phones away</div>
+          <div class="bt" contenteditable="false" data-key="b10-t2">Outdoor walk, park, or garden time if weather allows</div>
+          <div class="bt" contenteditable="false" data-key="b10-t3">Movie night, games, or reading together</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b10')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b11-time">~8:00 PM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b11-name">🌙 Bedtime Routine</div>
+        <div class="block-desc" contenteditable="false" data-key="b11-desc">Tuck in the girls. Story time. This is the last anchor point of their day.</div>
+        <div class="block-tasks" id="bt-b11">
+          <div class="bt" contenteditable="false" data-key="b11-t1">Girls wash, brush teeth, pyjamas</div>
+          <div class="bt" contenteditable="false" data-key="b11-t2">Story time — chapter book or a short read</div>
+          <div class="bt" contenteditable="false" data-key="b11-t3">Quick check-in — how was your day? One good thing?</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b11')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--terra)"></div><div class="block-line"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b12-time">~8:30 PM · ANCHOR</div>
+        <div class="block-name" contenteditable="false" data-key="b12-name">🍽️ Kitchen Close</div>
+        <div class="block-desc" contenteditable="false" data-key="b12-desc">A clean kitchen tonight means a peaceful morning tomorrow.</div>
+        <div class="block-tasks" id="bt-b12">
+          <div class="bt" contenteditable="false" data-key="b12-t1">Final dishes washed and put away</div>
+          <div class="bt" contenteditable="false" data-key="b12-t2">Counters wiped, stove clean</div>
+          <div class="bt" contenteditable="false" data-key="b12-t3">Tomorrow's breakfast thought about — any prep needed?</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b12')">+ Add task</button>
+      </div>
+    </div>
+    <div class="block-row" data-editable-section>
+      <div class="block-left"><div class="block-dot" style="background:var(--sage)"></div></div>
+      <div class="block-content">
+        <div class="block-time" contenteditable="false" data-key="b13-time">~9:00 PM · YOUR TIME</div>
+        <div class="block-name" contenteditable="false" data-key="b13-name">🌿 Personal Wind Down</div>
+        <div class="block-desc" contenteditable="false" data-key="b13-desc">This hour is yours. Not content. Not planning. Not chores. Yours.</div>
+        <div class="block-tasks" id="bt-b13">
+          <div class="bt" contenteditable="false" data-key="b13-t1">Open Roots — log today, set tomorrow's 3 priorities (10 min max)</div>
+          <div class="bt" contenteditable="false" data-key="b13-t2">Skin care — your full evening routine</div>
+          <div class="bt" contenteditable="false" data-key="b13-t3">Watch something you love, read, journal, or simply rest</div>
+          <div class="bt" contenteditable="false" data-key="b13-t4">Phone goes down by 9:30pm — sleep by 10pm</div>
+        </div>
+        <button class="edit-add-btn" onclick="addBlockTask('bt-b13')">+ Add task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DAY TYPES ══════════ -->
+<div class="page" id="page-daytypes">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="dt-tag">Flexibility by Design</span>
+    <h1>Your <em contenteditable="false" data-key="dt-h1">Day Types</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="dt-sub">Not every day is the same. You have five named day types. Each morning you choose the one that fits your energy, your cycle, and what life needs today.</p>
+  </div>
+  <div class="callout c-gold"><strong>How to choose your day type</strong><span contenteditable="false" data-key="dt-callout">Open Roots at 5am during your Wizard Hour. Look at your cycle phase. Feel your body. Pick the day type that matches — not the one you think you should have.</span></div>
+  <div class="day-grid" id="day-grid">
+    <div class="day-card"><div class="day-card-header" onclick="toggle(this)"><div class="day-icon">🔥</div><div><div class="day-label" contenteditable="false" data-key="dyt1-label">Full Day</div><div class="day-sub" contenteditable="false" data-key="dyt1-sub">All blocks · All output · Follicular or Ovulatory phase</div></div><div class="day-chev">▶</div></div><div class="day-body"><div class="day-section-lbl">When to use it</div><div class="day-item" contenteditable="false" data-key="dyt1-w1">Follicular (Days 5–11) or Ovulatory (Days 12–16) — high energy, sharp brain, magnetic presence</div><div class="day-item" contenteditable="false" data-key="dyt1-w2">When you wake feeling strong, motivated, and clear</div><div class="day-section-lbl">What changes</div><div class="day-item" contenteditable="false" data-key="dyt1-c1">All blocks run at full intensity — Wizard Hour has a real deliverable</div><div class="day-item" contenteditable="false" data-key="dyt1-c2">2pm block: batch film 3–4 clips back to back, then edit, then send pitches</div></div></div>
+    <div class="day-card"><div class="day-card-header" onclick="toggle(this)"><div class="day-icon">☀️</div><div><div class="day-label" contenteditable="false" data-key="dyt2-label">Normal Day</div><div class="day-sub" contenteditable="false" data-key="dyt2-sub">Standard rhythm · Most common day type</div></div><div class="day-chev">▶</div></div><div class="day-body"><div class="day-section-lbl">When to use it</div><div class="day-item" contenteditable="false" data-key="dyt2-w1">When nothing special is happening — a regular Monday, a regular Wednesday</div><div class="day-section-lbl">What it looks like</div><div class="day-item" contenteditable="false" data-key="dyt2-c1">Wizard Hour: journaling + one content task</div><div class="day-item" contenteditable="false" data-key="dyt2-c2">2pm: open UGC HQ, do the next task on your pipeline — film, edit, OR pitch</div></div></div>
+    <div class="day-card"><div class="day-card-header" onclick="toggle(this)"><div class="day-icon">🌤️</div><div><div class="day-label" contenteditable="false" data-key="dyt3-label">Light Day</div><div class="day-sub" contenteditable="false" data-key="dyt3-sub">Core only · Low energy · Late luteal or any hard day</div></div><div class="day-chev">▶</div></div><div class="day-body"><div class="day-section-lbl">When to use it</div><div class="day-item" contenteditable="false" data-key="dyt3-w1">Late luteal (Days 22–25) — PMS, fatigue, low mood</div><div class="day-item" contenteditable="false" data-key="dyt3-w2">Any day you wake up and your body says no</div><div class="day-section-lbl">What it looks like</div><div class="day-item" contenteditable="false" data-key="dyt3-c1">Wizard Hour: just journaling — no content deliverables</div><div class="day-item" contenteditable="false" data-key="dyt3-c2">2pm: admin only — check pipeline, respond to messages, no filming</div></div></div>
+    <div class="day-card"><div class="day-card-header" onclick="toggle(this)"><div class="day-icon">🛋️</div><div><div class="day-label" contenteditable="false" data-key="dyt4-label">Cozy Day</div><div class="day-sub" contenteditable="false" data-key="dyt4-sub">Menstrual phase · Body rest · School from the sofa</div></div><div class="day-chev">▶</div></div><div class="day-body"><div class="day-section-lbl">When to use it</div><div class="day-item" contenteditable="false" data-key="dyt4-w1">Menstrual phase — Days 1–4 especially Days 1–2 (heaviest)</div><div class="day-section-lbl">What it looks like</div><div class="day-item" contenteditable="false" data-key="dyt4-c1">Wizard Hour: skip or stay in bed — tea, warmth, gentle music</div><div class="day-item" contenteditable="false" data-key="dyt4-c2">Rest hour: 2 hours minimum. Heating pad. Iron-rich snack.</div><div class="day-item" contenteditable="false" data-key="dyt4-c3">2pm: UGC HQ closed. No filming. No pitching.</div></div></div>
+    <div class="day-card"><div class="day-card-header" onclick="toggle(this)"><div class="day-icon">🌳</div><div><div class="day-label" contenteditable="false" data-key="dyt5-label">Out Day</div><div class="day-sub" contenteditable="false" data-key="dyt5-sub">Adventures · Library · Park · The world is the classroom</div></div><div class="day-chev">▶</div></div><div class="day-body"><div class="day-section-lbl">When to use it</div><div class="day-item" contenteditable="false" data-key="dyt5-w1">Planned outings — library Wednesday, park day, market trips, errands</div><div class="day-section-lbl">What it looks like</div><div class="day-item" contenteditable="false" data-key="dyt5-c1">Wizard Hour: happens as normal — the outing is later, not an excuse to skip</div><div class="day-item" contenteditable="false" data-key="dyt5-c2">2pm: UGC HQ stays closed — film life content naturally with your phone</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ WEEKLY ══════════ -->
+<div class="page" id="page-weekly">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="wk-tag">The Shape of Your Week</span>
+    <h1>Weekly <em contenteditable="false" data-key="wk-h1">Rhythm</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="wk-sub">Each day has a personality. When you know Monday is a deep-work day and Wednesday is adventure day, you stop fighting the week and start riding it.</p>
+  </div>
+  <div class="callout c-sage"><strong>Sunday Evening — The Week's Foundation (20 min)</strong><span contenteditable="false" data-key="wk-callout">Open Cycle Guide → check your phase for the week. Open UGC HQ → see what's due. Open Luminary → prep school days. Open Roots → set the week's 3 priorities. That's it. Close everything. The week is set.</span></div>
+  <div class="slbl">The Week at a Glance</div>
+  <div class="week-grid" id="week-grid">
+    <div class="wday"><div class="wday-name">SUN</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-sun-title">Weekly Reset · Plan from Peace, Not Panic</div><div class="wday-detail" contenteditable="false" data-key="wk-sun-detail">Check cycle phase entering the week. UGC HQ: what's filming or due this week? Luminary: is school set? Roots: batch cook if follicular. Set 3 weekly priorities. Evening is family time. No work after 7pm Sunday.</div></div></div>
+    <div class="wday"><div class="wday-name">MON</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-mon-title">Strong Start · Set the Tone for the Week</div><div class="wday-detail" contenteditable="false" data-key="wk-mon-detail">Roots: confirm day type at 5am. Full homeschool day — Maths, English, Science. 2pm: first UGC task of the week. Grocery order confirmed today. Floors swept, surfaces wiped.</div></div></div>
+    <div class="wday"><div class="wday-name">TUE</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-tue-title">Deep Work Day · Best Filming Day of the Week</div><div class="wday-detail" contenteditable="false" data-key="wk-tue-detail">Homeschool: History or Geography + Creative skills. 2pm if follicular/ovulatory: batch film 2–3 clips. If luteal: edit footage, write captions. Bathrooms cleaned. Laundry wash started.</div></div></div>
+    <div class="wday"><div class="wday-name">WED</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-wed-title">Out Day · The World is the Classroom</div><div class="wday-detail" contenteditable="false" data-key="wk-wed-detail">Library, nature walk, market, park, or co-op — pick one. Luminary Out Mode: real-world learning only. UGC HQ stays closed. Lighter cooking — quick dinner. Laundry fold and put away.</div></div></div>
+    <div class="wday"><div class="wday-name">THU</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-thu-title">Edit & Deliver Day · The Business Gets Done</div><div class="wday-detail" contenteditable="false" data-key="wk-thu-detail">Homeschool: ICT, Life Skills, or Financial Literacy + review. 2pm: edit content, submit to brands, send invoices. Pitch 2–3 new brands if ovulatory. Bedroom tidying.</div></div></div>
+    <div class="wday"><div class="wday-name">FRI</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-fri-title">Fun Friday · Project School + Family Afternoon</div><div class="wday-detail" contenteditable="false" data-key="wk-fri-detail">Luminary Project Day — science experiment, cooking lesson, art project. No strict timetable. UGC HQ closed unless urgent deadline. Pantry + fridge reset. Family movie or game night.</div></div></div>
+    <div class="wday"><div class="wday-name">SAT</div><div class="wday-body"><div class="wday-title" contenteditable="false" data-key="wk-sat-title">Family Day · All Apps Closed</div><div class="wday-detail" contenteditable="false" data-key="wk-sat-detail">No homeschool. No UGC HQ. No Luminary. Partner leads morning — you get a slow start. Adventures, visits, outdoor time. Film life naturally. If great UGC idea: voice note it. Log it Sunday.</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════ CYCLE ══════════ -->
+<div class="page" id="page-cycle">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="cy-tag">Your 25-Day Cycle · Your Superpower</span>
+    <h1>Living by Your <em contenteditable="false" data-key="cy-h1">Cycle</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="cy-sub">Your cycle is not an inconvenience. It is a map. Every 25 days you move through five distinct phases — each one with its own energy, its own gifts, and its own instructions for how to live.</p>
+  </div>
+  <div class="callout c-rose"><strong>🌙 The Mindset Shift</strong><span contenteditable="false" data-key="cy-callout">You do not have the same energy every day — and you are not supposed to. A woman who plans with her cycle works with nature. A woman who ignores her cycle works against herself.</span></div>
+  <div class="slbl">How Each Phase Changes Your Life</div>
+  <div class="phase-table-wrap"><table class="phase-table">
+    <tr><th>Phase</th><th>Home & Life</th><th>Homeschool</th><th>UGC Business</th></tr>
+    <tr><td contenteditable="false" data-key="cy-r1-ph">🩸 Menstrual<br><span style="font-size:0.68rem;color:var(--muted)">Days 1–4</span></td><td contenteditable="false" data-key="cy-r1-h">Rest is the work. Iron-rich food. Partner runs dinner. Batch cook was done on Day 23–24.</td><td contenteditable="false" data-key="cy-r1-s">Sofa school. Audiobooks, documentaries, read-alouds. 8yr leads.</td><td contenteditable="false" data-key="cy-r1-u">UGC HQ stays closed. Review contracts only. Write cycle reflection journal.</td></tr>
+    <tr><td contenteditable="false" data-key="cy-r2-ph">🌱 Follicular<br><span style="font-size:0.68rem;color:var(--muted)">Days 5–11</span></td><td contenteditable="false" data-key="cy-r2-h">Energy returns. Batch cook Days 5–6. Plan the full month. Grocery shop.</td><td contenteditable="false" data-key="cy-r2-s">Introduce new subjects. Experiments. Nature study.</td><td contenteditable="false" data-key="cy-r2-u">Write all scripts. Batch film 3–4 videos. Send 10 pitches. Set content calendar.</td></tr>
+    <tr><td contenteditable="false" data-key="cy-r3-ph">✨ Ovulatory<br><span style="font-size:0.68rem;color:var(--muted)">Days 12–16</span></td><td contenteditable="false" data-key="cy-r3-h">Peak energy. Book social events, hard conversations. Get dressed beautifully.</td><td contenteditable="false" data-key="cy-r3-s">Best teaching days. Hard maths concepts, complex writing.</td><td contenteditable="false" data-key="cy-r3-u">Film everything camera-facing. Go live. Negotiate brand rates. Reach out to dream brands.</td></tr>
+    <tr><td contenteditable="false" data-key="cy-r4-ph">🍂 Early Luteal<br><span style="font-size:0.68rem;color:var(--muted)">Days 17–21</span></td><td contenteditable="false" data-key="cy-r4-h">Wind down gently. More rest. Cozy cooking — soups, stews.</td><td contenteditable="false" data-key="cy-r4-s">Review and wrap up units. Lighter day types.</td><td contenteditable="false" data-key="cy-r4-u">Edit all ovulation footage. Submit deliverables. Send invoices.</td></tr>
+    <tr><td contenteditable="false" data-key="cy-r5-ph">🪺 Nesting<br><span style="font-size:0.68rem;color:var(--muted)">Days 22–24</span></td><td contenteditable="false" data-key="cy-r5-h">Deep clean kitchen + bathrooms. Batch cook period meals. Stock up.</td><td contenteditable="false" data-key="cy-r5-s">Art, life skills, cooking lessons with the girls.</td><td contenteditable="false" data-key="cy-r5-u">No new gigs. Schedule existing posts. Prep ideas vault for next cycle.</td></tr>
+    <tr><td contenteditable="false" data-key="cy-r6-ph">😴 Late Luteal<br><span style="font-size:0.68rem;color:var(--muted)">Day 25</span></td><td contenteditable="false" data-key="cy-r6-h">Minimum viable day. Partner leads fully. Magnesium glycinate. Epsom salt bath.</td><td contenteditable="false" data-key="cy-r6-s">Cozy mode, full day. Girls know to be gentle.</td><td contenteditable="false" data-key="cy-r6-u">All apps closed. Scheduled posts only. Period arrives tomorrow — you are already ready.</td></tr>
+  </table></div>
+  <div class="mantra"><span contenteditable="false" data-key="cy-mantra">"My body knows what it needs. My cycle is not an obstacle. It is the schedule."</span></div>
+</div>
+
+<!-- ══════════ UGC PATH ══════════ -->
+<div class="page" id="page-ugc">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="ugc-tag">AshaJolies UGC HQ · Your Business</span>
+    <h1>The UGC <em contenteditable="false" data-key="ugc-h1">Path</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="ugc-sub">This is not a side hustle. This is a business you are building from your home, from your life, in one 2pm block per day.</p>
+  </div>
+  <div class="callout c-terra"><strong>🔑 The One Rule That Changes Everything</strong><span contenteditable="false" data-key="ugc-callout">UGC HQ opens at 2pm and closes when the content block ends. One block per day, five days per week — that is your business hours. That is enough to build something real.</span></div>
+  <div class="slbl">Your Income Roadmap</div>
+  <div class="roadmap" id="ugc-roadmap">
+    <div class="rm-card" data-editable-section><div class="rm-header"><div class="rm-num" contenteditable="false" data-key="rm1-num">MONTH 1</div><div class="rm-title" contenteditable="false" data-key="rm1-title">Build the Portfolio & First Gigs</div><div class="rm-income" contenteditable="false" data-key="rm1-income">$105–$190</div></div><div class="rm-items" id="rmi-1"><div class="rm-item" contenteditable="false" data-key="rm1-i1">Post 5 portfolio pieces on Instagram using products you already own</div><div class="rm-item" contenteditable="false" data-key="rm1-i2">Send 10 personalised pitches per week — DM, WhatsApp, email</div><div class="rm-item" contenteditable="false" data-key="rm1-i3">Close your first 3 × $35 singles = $105 cash + gifting products</div><div class="rm-item" contenteditable="false" data-key="rm1-i4">Set up Fiverr profile as secondary income stream</div></div><button class="edit-add-btn" onclick="addRmItem('rmi-1')">+ Add item</button><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rm-card')">✕ Remove milestone</button></div></div>
+    <div class="rm-card" data-editable-section><div class="rm-header"><div class="rm-num" contenteditable="false" data-key="rm2-num">MONTH 2</div><div class="rm-title" contenteditable="false" data-key="rm2-title">Build Relationships & Raise Rates</div><div class="rm-income" contenteditable="false" data-key="rm2-income">$300–$500</div></div><div class="rm-items" id="rmi-2"><div class="rm-item" contenteditable="false" data-key="rm2-i1">Follow up with every Month 1 brand — propose a retainer or bundle</div><div class="rm-item" contenteditable="false" data-key="rm2-i2">Raise rate to $40 per video after 5 completed gigs</div><div class="rm-item" contenteditable="false" data-key="rm2-i3">Deliver consistently on time — reputation is your marketing</div></div><button class="edit-add-btn" onclick="addRmItem('rmi-2')">+ Add item</button><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rm-card')">✕ Remove milestone</button></div></div>
+    <div class="rm-card" data-editable-section><div class="rm-header"><div class="rm-num" contenteditable="false" data-key="rm3-num">MONTH 3+</div><div class="rm-title" contenteditable="false" data-key="rm3-title">Retainers, Referrals & Scaling</div><div class="rm-income" contenteditable="false" data-key="rm3-income">$500–$1,000+</div></div><div class="rm-items" id="rmi-3"><div class="rm-item" contenteditable="false" data-key="rm3-i1">Propose monthly retainers to your top 2 brands — 4 videos/month</div><div class="rm-item" contenteditable="false" data-key="rm3-i2">Raise rate by $10 every 60 days as portfolio grows</div><div class="rm-item" contenteditable="false" data-key="rm3-i3">Get your first referral — ask every satisfied brand for a recommendation</div></div><button class="edit-add-btn" onclick="addRmItem('rmi-3')">+ Add item</button><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rm-card')">✕ Remove milestone</button></div></div>
+  </div>
+  <button class="edit-add-btn" onclick="addRoadmapMilestone()">+ Add income milestone</button>
+</div>
+
+<!-- ══════════ RULES ══════════ -->
+<div class="page" id="page-rules">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="ru-tag">The Foundation Everything Rests On</span>
+    <h1>My <em contenteditable="false" data-key="ru-h1">Rules</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="ru-sub">These are not suggestions. These are the agreements you have made with yourself. Come back to this page when you feel scattered.</p>
+  </div>
+  <div class="mantra"><span contenteditable="false" data-key="ru-mantra">"Consistency is a quiet, daily act. No one sees it happening. Everyone sees the result."</span></div>
+  <div id="rules-list">
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r1-n">RULE 01</div><div class="rule-title" contenteditable="false" data-key="r1-title">The Wizard Hour is sacred. 5am happens even on hard days.</div><div class="rule-body" contenteditable="false" data-key="r1-body">Even 20 minutes. Even just tea and a journal. The act of showing up for yourself before anyone else does is the most powerful thing you can do. It builds the identity of a woman who keeps her word to herself.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r2-n">RULE 02</div><div class="rule-title" contenteditable="false" data-key="r2-title">One app at a time. Never two.</div><div class="rule-body" contenteditable="false" data-key="r2-body">When Luminary is open, UGC HQ is closed. When UGC HQ is open, Luminary is closed. When you're with your girls, everything is closed. App-switching is the root of feeling overwhelmed and scattered.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r3-n">RULE 03</div><div class="rule-title" contenteditable="false" data-key="r3-title">UGC HQ is a 2pm business. It does not exist before or after.</div><div class="rule-body" contenteditable="false" data-key="r3-body">No checking brand emails at 9am. No scrolling your gig tracker at 9pm. Your business runs in one intentional block per day.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r4-n">RULE 04</div><div class="rule-title" contenteditable="false" data-key="r4-title">Sunday planning replaces all mid-week anxiety.</div><div class="rule-body" contenteditable="false" data-key="r4-body">20 minutes on Sunday — cycle check, UGC pipeline, school prep, Roots priorities. When Sunday is done, the week is decided. You don't re-decide it on Monday morning.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r5-n">RULE 05</div><div class="rule-title" contenteditable="false" data-key="r5-title">Your body is always right. Your cycle is always correct.</div><div class="rule-body" contenteditable="false" data-key="r5-body">Adjust the plan to match the body. Never adjust the body to match the plan.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r6-n">RULE 06</div><div class="rule-title" contenteditable="false" data-key="r6-title">The girls come before content. Always.</div><div class="rule-body" contenteditable="false" data-key="r6-body">Your girls will remember your presence, not your productivity. The content will always be there tomorrow. This moment with them will not.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r7-n">RULE 07</div><div class="rule-title" contenteditable="false" data-key="r7-title">A small done day is better than a perfect planned day.</div><div class="rule-body" contenteditable="false" data-key="r7-body">You do not need a perfect day. You need a real day. Done always beats perfect.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r8-n">RULE 08</div><div class="rule-title" contenteditable="false" data-key="r8-title">Rest is not earned. Rest is required.</div><div class="rule-body" contenteditable="false" data-key="r8-body">You do not earn your rest hour by being productive enough. Rest is what makes everything else possible.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r9-n">RULE 09</div><div class="rule-title" contenteditable="false" data-key="r9-title">You are allowed to enjoy your life.</div><div class="rule-body" contenteditable="false" data-key="r9-body">Cook the meal you actually want to eat. Watch the show. Take the walk. Living fully is not a distraction from your goals — it is the source of everything you create.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+    <div class="rule" data-editable-section><div class="rule-n" contenteditable="false" data-key="r10-n">RULE 10</div><div class="rule-title" contenteditable="false" data-key="r10-title">You have already built more than most people will. Now live inside it.</div><div class="rule-body" contenteditable="false" data-key="r10-body">Roots Flow. Luminary Homeschool. AshaJolies UGC HQ. Your Cycle Life Guide. You built extraordinary infrastructure for your life. The work now is to trust what you built and live fully inside it.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div></div>
+  </div>
+  <button class="edit-add-btn" onclick="addRule()">+ Add rule</button>
+</div>
+
+<!-- ══════════ WHEN LOST ══════════ -->
+<div class="page" id="page-reset">
+  <div class="hero">
+    <span class="hero-tag" contenteditable="false" data-key="lo-tag">Come Back Here First</span>
+    <h1>When You Feel <em contenteditable="false" data-key="lo-h1">Lost</em></h1>
+    <p class="hero-sub" contenteditable="false" data-key="lo-sub">Some days the whole system feels like too much. Everything is behind. Nothing is working. This page is for those days.</p>
+  </div>
+  <div class="aff-card">
+    <div class="aff-text" contenteditable="false" data-key="lo-aff">"I am not behind. I am not failing. I am a woman in the middle of building something real — and that is always messy in the middle."</div>
+    <div class="aff-sub" contenteditable="false" data-key="lo-aff-sub">Read this out loud right now</div>
+  </div>
+  <div class="slbl">The 5-Step Reset — Do These in Order</div>
+  <div class="checklist" id="checklist-reset">
+    <div class="ci" data-editable-section><div class="ci-icon">1️⃣</div><div class="ci-text"><strong contenteditable="false" data-key="lo-s1-title">Put the phone down. Walk away for 10 minutes.</strong><span contenteditable="false" data-key="lo-s1-body">Overwhelm lives in the apps and the screen. Make tea. Step outside. Breathe. Come back calmer.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon">2️⃣</div><div class="ci-text"><strong contenteditable="false" data-key="lo-s2-title">Open your Cycle Guide ONLY. Check what day you're on.</strong><span contenteditable="false" data-key="lo-s2-body">That number explains 80% of how you're feeling. In late luteal? This is biological, not failure.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon">3️⃣</div><div class="ci-text"><strong contenteditable="false" data-key="lo-s3-title">Ask: What is the ONE thing that must happen today?</strong><span contenteditable="false" data-key="lo-s3-body">Not the list. Not everything. One thing. Write it down. Just that one thing gets done today.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon">4️⃣</div><div class="ci-text"><strong contenteditable="false" data-key="lo-s4-title">Cancel, reduce, or postpone everything non-essential.</strong><span contenteditable="false" data-key="lo-s4-body">If you're in late luteal or menstrual: drop 60% of the plan. Minimum viable everything.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+    <div class="ci" data-editable-section><div class="ci-icon">5️⃣</div><div class="ci-text"><strong contenteditable="false" data-key="lo-s5-title">Reset on Sunday. Not today.</strong><span contenteditable="false" data-key="lo-s5-body">Do not try to reorganise your whole life mid-week. Survive today simply. The week can hold a few imperfect days.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div></div>
+  </div>
+  <div class="mantra"><span contenteditable="false" data-key="lo-mantra">"Everything does not have to be perfect for life to be beautiful. Most of the best moments happen inside the imperfect ordinary days."</span></div>
+  <div class="slbl">The Last Word</div>
+  <div class="aff-card">
+    <div class="aff-text" contenteditable="false" data-key="lo-last">You are a homeschooling mother building a business from your kitchen table. You are raising two girls who will grow up watching a woman who did not give up on herself. You are learning to live by your own rhythm, your own cycle, your own terms. That is the life. You are already in it.</div>
+    <div class="aff-sub" contenteditable="false" data-key="lo-last-sub">Come back to this page whenever you need to remember · Asha Jolie</div>
+  </div>
+</div>
+
+<!-- ══════════ PERSONAL NOTES ══════════ -->
+<div class="page" id="page-notes">
+  <div class="hero">
+    <span class="hero-tag">Your Space</span>
+    <h1>Personal <em>Notes</em></h1>
+    <p class="hero-sub">A free space for thoughts, ideas, cycle notes, wins, reflections. All yours. Saves automatically.</p>
+  </div>
+  <div class="slbl">Today's Thoughts</div>
+  <textarea class="notes-area" id="notes-today" placeholder="What's on your mind today..."></textarea>
+  <div class="slbl" style="margin-top:20px;">UGC Ideas Vault</div>
+  <textarea class="notes-area" id="notes-ugc" placeholder="Content ideas, brand pitches, video concepts..."></textarea>
+  <div class="slbl" style="margin-top:20px;">Cycle Reflections</div>
+  <textarea class="notes-area" id="notes-cycle" placeholder="What worked this cycle? What did your body tell you?"></textarea>
+  <div class="slbl" style="margin-top:20px;">Wins & Gratitude</div>
+  <textarea class="notes-area" id="notes-wins" placeholder="Big wins, small wins, things you're grateful for..."></textarea>
+</div>
+
+<script>
+// ── PAGE NAVIGATION ──
+const pages = ['vision','daily','daytypes','weekly','cycle','ugc','rules','reset','notes'];
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('visible');
+  const idx = pages.indexOf(id);
+  if(idx >= 0) document.querySelectorAll('.nb')[idx].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const chev = header.querySelector('.day-chev');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if(chev) chev.classList.toggle('open', !isOpen);
+}
+
+// ── EDIT MODE ──
+let editMode = false;
+let saveTimer = null;
+
+function toggleEdit() {
+  editMode = !editMode;
+  document.body.classList.toggle('editing', editMode);
+  document.getElementById('edit-toggle').classList.toggle('active', editMode);
+  document.getElementById('edit-bar').classList.toggle('visible', editMode);
+
+  // Toggle contenteditable on all tagged elements
+  document.querySelectorAll('[data-key]').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+
+  if (!editMode) {
+    saveAllContent();
+    showToast('✓ All changes saved');
+  }
+}
+
+// ── SAVE / LOAD ──
+function saveAllContent() {
+  const data = {};
+  document.querySelectorAll('[data-key]').forEach(el => {
+    data[el.dataset.key] = el.innerHTML;
+  });
+  // Notes (textareas)
+  ['notes-today','notes-ugc','notes-cycle','notes-wins'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) data[id] = el.value;
+  });
+  try { localStorage.setItem('asha-rhythm-v1', JSON.stringify(data)); } catch(e) {}
+}
+
+function loadSavedContent() {
+  try {
+    const saved = localStorage.getItem('asha-rhythm-v1');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    Object.keys(data).forEach(key => {
+      // Textareas
+      const ta = document.getElementById(key);
+      if (ta && ta.tagName === 'TEXTAREA') { ta.value = data[key]; return; }
+      // Contenteditable elements
+      const el = document.querySelector(`[data-key="${key}"]`);
+      if (el) el.innerHTML = data[key];
+    });
+  } catch(e) {}
+}
+
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveAllContent();
+    showToast('✓ Saved');
+  }, 1500);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('save-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Auto-save on any input in edit mode
+document.addEventListener('input', (e) => {
+  if (!editMode) return;
+  if (e.target.dataset.key || e.target.tagName === 'TEXTAREA') autoSave();
+});
+
+// Notes textareas always save
+document.querySelectorAll('.notes-area').forEach(ta => {
+  ta.addEventListener('input', autoSave);
+});
+
+// ── ADD / DELETE HELPERS ──
+let uidCounter = Date.now();
+function uid() { return 'x' + (uidCounter++); }
+
+function deleteCard(btn, cls) {
+  const card = btn.closest('.' + cls);
+  if(card) { card.remove(); autoSave(); }
+}
+
+function addBlockTask(containerId) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const id = uid();
+  const el = document.createElement('div');
+  el.className = 'bt';
+  el.contentEditable = editMode ? 'true' : 'false';
+  el.dataset.key = id;
+  el.textContent = 'New task — tap to edit';
+  container.appendChild(el);
+  el.focus();
+  autoSave();
+}
+
+function addChecklist(containerId) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const id1 = uid(), id2 = uid(), id3 = uid();
+  const el = document.createElement('div');
+  el.className = 'ci';
+  el.setAttribute('data-editable-section','');
+  el.innerHTML = `<div class="ci-icon" contenteditable="${editMode}" data-key="${id1}">✦</div><div class="ci-text"><strong contenteditable="${editMode}" data-key="${id2}">New item title</strong><span contenteditable="${editMode}" data-key="${id3}"> Add your description here.</span></div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'ci')">✕</button></div>`;
+  container.appendChild(el);
+  autoSave();
+}
+
+function addVisionCard() {
+  const grid = document.getElementById('vision-grid');
+  const id1=uid(), id2=uid(), id3=uid();
+  const el = document.createElement('div');
+  el.className = 'vision-card';
+  el.setAttribute('data-editable-section','');
+  el.innerHTML = `<span class="vision-icon" contenteditable="${editMode}" data-key="${id1}">✨</span><div class="vision-title" contenteditable="${editMode}" data-key="${id2}">New Vision</div><div class="vision-body" contenteditable="${editMode}" data-key="${id3}">Describe what you are building here.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'vision-card')">✕ Remove card</button></div>`;
+  grid.appendChild(el);
+  autoSave();
+}
+
+function addPromise() {
+  const list = document.getElementById('promises-list');
+  const num = list.querySelectorAll('.rule').length + 1;
+  const id1=uid(), id2=uid(), id3=uid();
+  const el = document.createElement('div');
+  el.className = 'rule';
+  el.setAttribute('data-editable-section','');
+  el.innerHTML = `<div class="rule-n" contenteditable="${editMode}" data-key="${id1}">PROMISE 0${num}</div><div class="rule-title" contenteditable="${editMode}" data-key="${id2}">New promise title</div><div class="rule-body" contenteditable="${editMode}" data-key="${id3}">Write your promise here.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div>`;
+  list.appendChild(el);
+  autoSave();
+}
+
+function addRule() {
+  const list = document.getElementById('rules-list');
+  const num = String(list.querySelectorAll('.rule').length + 1).padStart(2,'0');
+  const id1=uid(), id2=uid(), id3=uid();
+  const el = document.createElement('div');
+  el.className = 'rule';
+  el.setAttribute('data-editable-section','');
+  el.innerHTML = `<div class="rule-n" contenteditable="${editMode}" data-key="${id1}">RULE ${num}</div><div class="rule-title" contenteditable="${editMode}" data-key="${id2}">Your new rule</div><div class="rule-body" contenteditable="${editMode}" data-key="${id3}">Write what this rule means to you.</div><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rule')">✕ Remove</button></div>`;
+  list.appendChild(el);
+  autoSave();
+}
+
+function addRmItem(containerId) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const id = uid();
+  const el = document.createElement('div');
+  el.className = 'rm-item';
+  el.contentEditable = editMode ? 'true' : 'false';
+  el.dataset.key = id;
+  el.textContent = 'New action item';
+  container.appendChild(el);
+  el.focus();
+  autoSave();
+}
+
+function addRoadmapMilestone() {
+  const roadmap = document.getElementById('ugc-roadmap');
+  const id1=uid(), id2=uid(), id3=uid(), idItems=uid();
+  const el = document.createElement('div');
+  el.className = 'rm-card';
+  el.setAttribute('data-editable-section','');
+  el.innerHTML = `<div class="rm-header"><div class="rm-num" contenteditable="${editMode}" data-key="${id1}">MONTH ?</div><div class="rm-title" contenteditable="${editMode}" data-key="${id2}">New Milestone</div><div class="rm-income" contenteditable="${editMode}" data-key="${id3}">$0–$0</div></div><div class="rm-items" id="${idItems}"><div class="rm-item" contenteditable="${editMode}" data-key="${uid()}">First action for this milestone</div></div><button class="edit-add-btn" onclick="addRmItem('${idItems}')">+ Add item</button><div class="edit-row-controls"><button class="edit-del-btn" onclick="deleteCard(this,'rm-card')">✕ Remove milestone</button></div>`;
+  roadmap.appendChild(el);
+  autoSave();
+}
+
+// ── INIT ──
+loadSavedContent();
+
+// Service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
